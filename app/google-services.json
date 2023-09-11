@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "645969779766",
+    "project_id": "trackerjava-77d3a",
+    "storage_bucket": "trackerjava-77d3a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:645969779766:android:a2d0f2944e612843070c97",
+        "android_client_info": {
+          "package_name": "com.example.trackerjava"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDIAYVmdVj5yvO88NrF54iYGlsjtq-3SnI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
