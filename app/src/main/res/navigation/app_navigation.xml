@@ -16,11 +16,16 @@
         android:id="@+id/action_authFragment_to_trackerFragment"
         app:destination="@id/trackerFragment" />
 
+    <action
+        android:id="@+id/action_trackerFragment_to_authFragment"
+        app:destination="@id/authFragment" />
+
     <fragment
         android:id="@+id/trackerFragment"
         android:name="com.example.trackerjava.TrackerFragment"
         android:label="TrackerFragment"
-        />
+        tools:layout="@layout/fragment_tracker" />
+
 
 
 </navigation>

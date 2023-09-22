@@ -68,12 +68,15 @@ dependencies {
     implementation ("com.google.firebase:firebase-auth:22.1.1")
     implementation ("com.google.firebase:firebase-firestore:24.7.1")
     implementation(platform("com.google.firebase:firebase-bom:32.2.3"))
-  //  implementation("com.google.firebase:firebase-analytics-ktx")
+
     implementation ("com.google.android.gms:play-services-location:21.0.1")
     implementation ("androidx.fragment:fragment:1.6.1")
     implementation ("androidx.activity:activity:1.7.2")
 
-
-
+    implementation ("androidx.room:room-runtime:2.5.2")
+    annotationProcessor ("androidx.room:room-compiler:2.5.2")
+    implementation ("androidx.room:room-ktx:2.5.2")
+    implementation ("androidx.sqlite:sqlite:2.1.0")
+    implementation ("androidx.work:work-runtime:2.7.0")
 }
 
