@@ -78,5 +78,7 @@ dependencies {
     implementation ("androidx.room:room-ktx:2.5.2")
     implementation ("androidx.sqlite:sqlite:2.1.0")
     implementation ("androidx.work:work-runtime:2.7.0")
+
+    implementation ("com.google.android.gms:play-services-location:21.0.1")
 }
 

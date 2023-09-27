@@ -25,7 +25,7 @@ public class TrackerFragment extends Fragment {
     private LocationManager locationManager;
     private boolean isGpsEnabled = false;
     private boolean isTracking = false;
-    private MyRoomDB myRoomDB;
+
 
 
     @Override
@@ -34,8 +34,6 @@ public class TrackerFragment extends Fragment {
         binding = FragmentTrackerBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
-      //  myRoomDB = MyRoomDB.getInstance((Application) requireContext());
-        myRoomDB = MyRoomDB.getInstance();
         locationManager = (LocationManager) requireActivity().getSystemService(Context.LOCATION_SERVICE);
 
         Toolbar toolbar = binding.toolbar;

@@ -1,6 +1,5 @@
 package com.example.trackerjava.repository;
 
-import android.content.Context;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import com.example.trackerjava.MyRoomDB;
@@ -11,11 +10,8 @@ public class MainRepository {
     private final MyRoomDB myRoomDB;
     private final UserDao userDao;
     private final MutableLiveData<Boolean> isLogged = new MutableLiveData<>();
-    private final Context context;
 
-    public MainRepository(Context context) {
-        this.context = context;
-       // myRoomDB = MyRoomDB.getInstance((Application)context);
+    public MainRepository(){
         myRoomDB = MyRoomDB.getInstance();
         userDao = myRoomDB.getDao();
     }

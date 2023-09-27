@@ -1,10 +1,8 @@
 package com.example.trackerjava;
 
-import android.app.Application;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
-
 import com.example.trackerjava.model.User;
 
 @Database(entities = {User.class}, version = 1)
@@ -14,11 +12,10 @@ public abstract class MyRoomDB extends RoomDatabase {
 
     public static synchronized MyRoomDB getInstance(){
         if(instance == null){
-            instance = MyApplication.getMyRoomDB();
-            /*instance = Room.databaseBuilder(context.getApplicationContext(),
+            instance = Room.databaseBuilder(MyApplication.getAppContext(),
                             MyRoomDB.class, "location_database")
                     .fallbackToDestructiveMigration()
-                    .build();*/
+                    .build();
         }
         return instance;
     }

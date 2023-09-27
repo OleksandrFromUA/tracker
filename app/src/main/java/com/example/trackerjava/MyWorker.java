@@ -4,6 +4,10 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import androidx.annotation.NonNull;
+import androidx.work.Constraints;
+import androidx.work.NetworkType;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 import com.example.trackerjava.model.User;
@@ -16,6 +20,7 @@ import com.google.firebase.firestore.SetOptions;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 
 public class MyWorker extends Worker {
@@ -25,7 +30,21 @@ public class MyWorker extends Worker {
         super(context, workerParams);
         this.context = context;
     }
+    public static void startMyWorker(Context context){
 
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build();
+        PeriodicWorkRequest syncWorkRequest = new PeriodicWorkRequest.Builder(
+                MyWorker.class,
+                15,
+                TimeUnit.MINUTES
+        )
+                .setConstraints(constraints)
+                .build();
+
+        WorkManager.getInstance(context).enqueue(syncWorkRequest);
+    }
     @NonNull
     @Override
     public Result doWork() {
@@ -78,11 +97,13 @@ public class MyWorker extends Worker {
             String uidUser = currentUser.getUid();
             CollectionReference collectionReference = db.collection("users");
             DocumentReference documentReference = collectionReference.document(uidUser);
+             //long timeSendCoordinate = System.currentTimeMillis();
 
             for (User coordinate : coordinates) {
                 Map<String, Object> locationData = new HashMap<>();
                 locationData.put("latitude", coordinate.getLatitude());
                 locationData.put("longitude", coordinate.getLongitude());
+                locationData.put("timeSendCoordinate", coordinate.getCoordinateTime());
 
                 documentReference.set(locationData, SetOptions.merge());
             }

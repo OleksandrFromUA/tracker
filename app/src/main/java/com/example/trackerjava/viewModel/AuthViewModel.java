@@ -5,7 +5,6 @@ import androidx.databinding.ObservableField;
 import androidx.lifecycle.ViewModel;
 import com.example.trackerjava.repository.AuthAndRegRepository;
 import com.google.firebase.auth.FirebaseAuth;
-import io.grpc.Context;
 import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -14,7 +13,6 @@ import io.reactivex.schedulers.Schedulers;
 
 public class AuthViewModel extends ViewModel {
 
-    private final Context context;
     private final FirebaseAuth firebaseAuth;
     private final AuthAndRegRepository authAndRegRepository;
     public final ObservableField<String> email = new ObservableField<>("");
@@ -22,8 +20,7 @@ public class AuthViewModel extends ViewModel {
    // String emailValue = email.get();
   //  String passwordValue = password.get();
 
-    public AuthViewModel(Context context) {
-        this.context = context;
+    public AuthViewModel(){
         firebaseAuth = FirebaseAuth.getInstance();
         authAndRegRepository = new AuthAndRegRepository();
 

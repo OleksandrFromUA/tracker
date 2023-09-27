@@ -17,14 +17,25 @@ public class User {
     private double latitude;
     @ColumnInfo(name = "longitude")
     private double longitude;
+    @ColumnInfo(name = "coordinateTime")
+    private long coordinateTime;
 
     public User() {
     }
-    public User(String uid, String mail, double latitude, double longitude) {
+    public User(String uid, String mail, double latitude, double longitude, long coordinateTime) {
         this.uid = uid;
         this.mail = mail;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.coordinateTime = coordinateTime;
+    }
+
+    public void setCoordinateTime(long coordinateTime) {
+        this.coordinateTime = coordinateTime;
+    }
+
+    public long getCoordinateTime() {
+        return coordinateTime;
     }
 
     public void setId(int id) {

@@ -1,22 +1,23 @@
 package com.example.trackerjava;
 
 import android.app.Application;
-import androidx.room.Room;
+import android.content.Context;
+
+
+import java.lang.ref.WeakReference;
 
 public class MyApplication extends Application {
 
-    private static MyRoomDB myRoomDB;
+    private static WeakReference<Context> appContext;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        myRoomDB = Room.databaseBuilder(getApplicationContext(), MyRoomDB.class, "location_database")
-                .fallbackToDestructiveMigration()
-                .build();
+        appContext = new WeakReference<>(getApplicationContext());
     }
 
-    public static MyRoomDB getMyRoomDB() {
-        return myRoomDB;
+    public static Context getAppContext(){
+       return appContext.get();
     }
 }
 
