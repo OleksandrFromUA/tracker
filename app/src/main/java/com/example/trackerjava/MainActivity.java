@@ -33,8 +33,8 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        MyWorker.startMyWorker(this);
-
+       // MyWorker.startMyWorker(this);
+        MyWorker.startMyWorker();
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
         String currentUidUser = currentUser.getUid();
 

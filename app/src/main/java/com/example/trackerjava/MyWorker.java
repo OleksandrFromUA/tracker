@@ -24,13 +24,12 @@ import java.util.concurrent.TimeUnit;
 
 
 public class MyWorker extends Worker {
-    private final Context context;
 
     public MyWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
-        this.context = context;
+
     }
-    public static void startMyWorker(Context context){
+    public static void startMyWorker(){
 
         Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -43,11 +42,13 @@ public class MyWorker extends Worker {
                 .setConstraints(constraints)
                 .build();
 
-        WorkManager.getInstance(context).enqueue(syncWorkRequest);
+
+        WorkManager.getInstance(MyApplication.getAppContext()).enqueue(syncWorkRequest);
     }
     @NonNull
     @Override
     public Result doWork() {
+
         try {
             List<User> coordinatesFromRoom = getCoordinatesFromRoom();
             if (isInternetAvailable()) {
@@ -56,11 +57,13 @@ public class MyWorker extends Worker {
                     deleteCoordinatesFromRoom(coordinatesFromRoom);
                     return Result.success();
                 } else {
-                    Utilit.showToast(context, R.string.failed_to_send_data_to_the_cloud);
+
+                    Utilit.showToast(MyApplication.getAppContext(), R.string.failed_to_send_data_to_the_cloud);
+
                     return Result.retry();
                 }
             } else {
-                Utilit.showToast(context, R.string.no_internet);
+                Utilit.showToast(MyApplication.getAppContext(), R.string.no_internet);
                 return Result.retry();
             }
         } catch (Exception e) {
@@ -78,7 +81,7 @@ public class MyWorker extends Worker {
     }
 
     private boolean isInternetAvailable() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+         ConnectivityManager connectivityManager = (ConnectivityManager) MyApplication.getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager != null) {
             NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
             if (networkInfo != null && networkInfo.isAvailable()) {
@@ -114,9 +117,10 @@ public class MyWorker extends Worker {
     }
 
     private void deleteCoordinatesFromRoom(List<User> coordinates) {
+
         MyRoomDB myRoomDB = MyRoomDB.getInstance();
         myRoomDB.getDao().deleteAllCoordinates();
-        Utilit.showToast(context, R.string.coordinates_successfully_removed_from_room_database);
+        Utilit.showToast(MyApplication.getAppContext(), R.string.coordinates_successfully_removed_from_room_database);
     }
 
 }

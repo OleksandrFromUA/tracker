@@ -121,10 +121,9 @@ public class MyForegroundService extends Service {
     }
 
     private void setupLocationRequest() {
-        LocationRequest.Builder builder = new LocationRequest.Builder()
-                .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
-                .setInterval(10 * 60 * 1000)
-                .setSmallestDisplacement(60.0f);
+        LocationRequest.Builder builder = new LocationRequest.Builder(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
+                .setIntervalMillis(10 * 60 * 1000)
+                .setMinUpdateDistanceMeters(60.0f);
         locationRequest = builder.build();
     }
 
