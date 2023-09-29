@@ -28,8 +28,9 @@ public class MyWorker extends Worker {
     public MyWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
 
+
     }
-    public static void startMyWorker(){
+    public static void startMyWorker(Context context){
 
         Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -43,7 +44,7 @@ public class MyWorker extends Worker {
                 .build();
 
 
-        WorkManager.getInstance(MyApplication.getAppContext()).enqueue(syncWorkRequest);
+       WorkManager.getInstance(context).enqueue(syncWorkRequest);
     }
     @NonNull
     @Override
@@ -58,12 +59,11 @@ public class MyWorker extends Worker {
                     return Result.success();
                 } else {
 
-                    Utilit.showToast(MyApplication.getAppContext(), R.string.failed_to_send_data_to_the_cloud);
-
+                    Utilit.showToast(this.getApplicationContext(), R.string.failed_to_send_data_to_the_cloud);
                     return Result.retry();
                 }
             } else {
-                Utilit.showToast(MyApplication.getAppContext(), R.string.no_internet);
+                Utilit.showToast(this.getApplicationContext(), R.string.no_internet);
                 return Result.retry();
             }
         } catch (Exception e) {
@@ -81,7 +81,7 @@ public class MyWorker extends Worker {
     }
 
     private boolean isInternetAvailable() {
-         ConnectivityManager connectivityManager = (ConnectivityManager) MyApplication.getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivityManager = (ConnectivityManager) this.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager != null) {
             NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
             if (networkInfo != null && networkInfo.isAvailable()) {
@@ -120,7 +120,7 @@ public class MyWorker extends Worker {
 
         MyRoomDB myRoomDB = MyRoomDB.getInstance();
         myRoomDB.getDao().deleteAllCoordinates();
-        Utilit.showToast(MyApplication.getAppContext(), R.string.coordinates_successfully_removed_from_room_database);
-    }
+        Utilit.showToast(this.getApplicationContext(), R.string.coordinates_successfully_removed_from_room_database);
+        }
 
 }

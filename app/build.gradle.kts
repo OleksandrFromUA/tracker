@@ -55,10 +55,10 @@ dependencies {
     implementation("com.google.firebase:firebase-database:20.2.2")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
-    implementation("androidx.navigation:navigation-runtime:2.7.2")
 
-    implementation ("androidx.navigation:navigation-fragment:2.7.2")
-    implementation ("androidx.navigation:navigation-ui:2.7.2")
+    implementation ("androidx.navigation:navigation-fragment:2.7.3")
+    implementation ("androidx.navigation:navigation-ui:2.7.3")
+    implementation("androidx.navigation:navigation-runtime:2.7.3")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
@@ -80,5 +80,6 @@ dependencies {
     implementation ("androidx.work:work-runtime:2.7.0")
 
     implementation ("com.google.android.gms:play-services-location:21.0.1")
+
 }
 

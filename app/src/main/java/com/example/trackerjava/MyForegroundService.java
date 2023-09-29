@@ -101,8 +101,8 @@ public class MyForegroundService extends Service {
                     NotificationManager.IMPORTANCE_DEFAULT
             );
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
+                notificationManager.createNotificationChannel(channel);
+            }
     }
 
     private void startForegroundService(){
@@ -141,8 +141,7 @@ public class MyForegroundService extends Service {
 
     @SuppressLint("MissingPermission")
     private void setupLocationUpdates() {
-       fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
-
+            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
     }
 
 

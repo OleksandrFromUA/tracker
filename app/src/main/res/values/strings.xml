@@ -37,4 +37,6 @@
     <string name="coordinates_successfully_removed_from_room_database">Coordinates successfully removed from Room database</string>
     <string name="failed_to_send_data_to_the_cloud">Failed to send data to the cloud</string>
     <string name="no_internet">No internet</string>
+    <string name="fail">registration failed</string>
+    <string name="success">User registration in Room completed successfully</string>
 </resources>

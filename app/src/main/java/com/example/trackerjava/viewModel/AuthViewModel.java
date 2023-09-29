@@ -1,5 +1,7 @@
 package com.example.trackerjava.viewModel;
 
+
+
 import android.annotation.SuppressLint;
 import androidx.databinding.ObservableField;
 import androidx.lifecycle.ViewModel;
@@ -51,6 +53,7 @@ public class AuthViewModel extends ViewModel {
             firebaseAuth.signInWithEmailAndPassword(email, password)
                     .addOnSuccessListener(authResult -> emitter.onComplete())
                     .addOnFailureListener(emitter::onError);
+
         });
     }
 
