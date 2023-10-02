@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +17,6 @@ import com.example.trackerjava.databinding.FragmentAuthBinding;
 import com.example.trackerjava.viewModel.AuthViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -36,7 +36,9 @@ public class AuthFragment extends Fragment {
         binding.setLifecycleOwner(this);
         firebaseAuth = FirebaseAuth.getInstance();
 
+
         binding.SIGNIN.setOnClickListener(v -> {
+            Log.i("key", "SIGNIN");
             String email = binding.InputNameText.getText().toString();
             String password = binding.InputPasswordText.getText().toString();
                     if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
@@ -54,71 +56,31 @@ public class AuthFragment extends Fragment {
 
         });
 
-       /* binding.signUp.setOnClickListener(v -> {
+
+
+             binding.signUp.setOnClickListener(v -> {
+                 Log.i("key", "Registration");
             String email = binding.InputNameText.getText().toString();
             String password = binding.InputPasswordText.getText().toString();
-            currentUser = firebaseAuth.getCurrentUser();
 
             if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
-                if(currentUser != null) {
-                    String currentUid = currentUser.getUid();
-                    authViewModel.isUserExistsRoom(currentUid)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(userExist ->{
-                                if(userExist){
-                                    Utilit.showToast(requireContext(),R.string.user_already_registered_please_login);
-                                }else {
-                                    Utilit.showToast(requireContext(),R.string.user_not_registered_please_register);
-                                    authViewModel.registrationUserLocalDB(currentUser.getUid(), email);
-                                }
-                            });
-                }else {
-                    Utilit.showToast(requireContext(),R.string.this_user_is_missing);
-                }
+                authViewModel.registrationUserLocalDB(email, password)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(() -> {
+                            Utilit.showToast(requireContext(), R.string.success);
+                        }, throwable -> {
+                            Utilit.showToast(requireContext(), R.string.fail);
+                        });
             } else {
-                Utilit.showToast(requireContext(),R.string.email_and_password_fields_are_empty);
-
+                Utilit.showToast(requireContext(), R.string.email_and_password_fields_are_empty);
             }
-
-        });*/
-
-        binding.signUp.setOnClickListener(v -> {
-            String email = binding.InputNameText.getText().toString();
-            String password = binding.InputPasswordText.getText().toString();
-            currentUser = firebaseAuth.getCurrentUser();
-
-            if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
-                if(currentUser != null) {
-                    String currentUid = currentUser.getUid();
-                    authViewModel.isUserExistsRoom(currentUid)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .flatMapCompletable(userExist ->{
-                                if(userExist){
-                                    Utilit.showToast(requireContext(),R.string.user_already_registered_please_login);
-                                    return Completable.complete();
-                                }else {
-                                    Utilit.showToast(requireContext(),R.string.user_not_registered_please_register);
-                                    return authViewModel.registrationUserLocalDB(currentUser.getUid(), email);
-                                }
-                            })
-                            .subscribe(() ->{
-                                Utilit.showToast(requireContext(), R.string.success);
-                            },throwable -> {
-                                Utilit.showToast(requireContext(), R.string.fail);
-                            });
-                }else {
-                    Utilit.showToast(requireContext(),R.string.this_user_is_missing);
-                }
-            } else {
-                Utilit.showToast(requireContext(),R.string.email_and_password_fields_are_empty);
-            }
-
         });
 
         return binding.getRoot();
     }
+
+
 }
 
 

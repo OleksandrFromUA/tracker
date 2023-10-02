@@ -30,6 +30,7 @@ public class AuthAndRegRepository {
                 emitter.onComplete();
             } else {
                 emitter.onError(new Exception("Failed to insert user into Room database"));
+
             }
         });
     }

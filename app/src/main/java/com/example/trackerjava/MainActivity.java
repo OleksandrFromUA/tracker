@@ -8,6 +8,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.util.Log;
+
 import com.example.trackerjava.databinding.ActivityMainBinding;
 import com.example.trackerjava.viewModel.MainViewModel;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
         currentUser = firebaseAuth.getCurrentUser();
         myRoomDB = MyRoomDB.getInstance();
     }
+
+
     @Override
     public void onPostCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
         super.onPostCreate(savedInstanceState, persistentState);
@@ -52,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
             String currentUidUser = currentUser.getUid();
             mainViewModel.isLogged(currentUidUser).observe(this, isLogged -> {
                 if (isLogged) {
+                    Log.i("key", "переход на rackerFragment");
                     navController.navigate(R.id.action_authFragment_to_trackerFragment);
                 } else {
                     Utilit.showToast(this, R.string.login_error);
@@ -69,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
                     if (id == R.id.action_logout) {
 
                         signOut();
+                        Log.i("key", "закрытие через логаут");
                         myRoomDB.getDao().deleteAllUsers();
                         navigateToAuthFragment();
                         return true;

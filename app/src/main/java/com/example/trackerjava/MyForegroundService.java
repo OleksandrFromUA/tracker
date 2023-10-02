@@ -25,6 +25,11 @@ import com.google.firebase.firestore.SetOptions;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.reactivex.Completable;
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+
 
 public class MyForegroundService extends Service {
     private final FirebaseAuth firebaseAuth;
@@ -63,34 +68,36 @@ public class MyForegroundService extends Service {
     }
 
 
+    @SuppressLint("CheckResult")
     private void saveLocationData(Location location) {
         String userId = firebaseAuth.getCurrentUser().getUid();
         String userEmail = firebaseAuth.getCurrentUser().getEmail();
         long timeCoordinate = System.currentTimeMillis();
 
         User user = new User(userId, userEmail, location.getLatitude(), location.getLongitude(), timeCoordinate);
-        long newUserInRoom = myRoomDB.getDao().insertUser(user);
 
+        long newUserInRoom = myRoomDB.getDao().insertUser(user);
         if (newUserInRoom != -1) {
             FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-            if (currentUser != null) {
-                Map<String, Object> locationData = new HashMap<>();
-                locationData.put("latitude", location.getLatitude());
-                locationData.put("longitude", location.getLongitude());
-                locationData.put("time", timeCoordinate);
+                    if (currentUser != null) {
 
-                DocumentReference documentReference = db.collection("users").document(userId);
-                documentReference.set(locationData, SetOptions.merge())
-                        .addOnSuccessListener(aVoid -> {
-                            Utilit.showToast(this, R.string.Data_sent_to_cloud);
-                        })
-                        .addOnFailureListener(error -> {
-                            Utilit.showToast(this, R.string.data_not_sent_to_cloud);
-                        });
-            }
+                            Map<String, Object> locationData = new HashMap<>();
+                            locationData.put("latitude", location.getLatitude());
+                            locationData.put("longitude", location.getLongitude());
+                            locationData.put("time", timeCoordinate);
 
-        }
-    }
+                            DocumentReference documentReference = db.collection("users").document(userId);
+                            documentReference.set(locationData, SetOptions.merge())
+                                    .addOnSuccessListener(aVoid -> {
+                                        Utilit.showToast(this, R.string.Data_sent_to_cloud);
+                                    })
+                                    .addOnFailureListener(error -> {
+                                        Utilit.showToast(this, R.string.data_not_sent_to_cloud);
+                                    });
+                        }
+                    }
+                    }
+
 
 
     private void createNotificationChannel() {
