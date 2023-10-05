@@ -20,10 +20,10 @@ public interface UserDao {
     void deleteAllUsers();
 
     @Query("SELECT * FROM users")
-    List<User> getAllCoordinates();
+    List<User> getUsersFromRoom();
 
-    @Query("DELETE FROM users")
-    void deleteAllCoordinates();
+   // @Query("DELETE FROM users")
+  //  void deleteAllCoordinates();
 
 }
 

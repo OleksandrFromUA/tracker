@@ -8,34 +8,17 @@ import androidx.room.PrimaryKey;
 public class User {
     @PrimaryKey(autoGenerate = true)
     private int id;
-
     @ColumnInfo(name = "uid")
     private String uid;
     @ColumnInfo(name = "mail")
     private String mail;
-    @ColumnInfo(name = "latitude")
-    private double latitude;
-    @ColumnInfo(name = "longitude")
-    private double longitude;
-    @ColumnInfo(name = "coordinateTime")
-    private long coordinateTime;
 
     public User() {
     }
-    public User(String uid, String mail, double latitude, double longitude, long coordinateTime) {
+    public User(String uid, String mail) {
         this.uid = uid;
         this.mail = mail;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.coordinateTime = coordinateTime;
-    }
 
-    public void setCoordinateTime(long coordinateTime) {
-        this.coordinateTime = coordinateTime;
-    }
-
-    public long getCoordinateTime() {
-        return coordinateTime;
     }
 
     public void setId(int id) {
@@ -50,13 +33,6 @@ public class User {
         this.uid = uid;
     }
 
-    public void setLatitude(int latitude) {
-        this.latitude = latitude;
-    }
-
-    public void setLongitude(int longitude) {
-        this.longitude = longitude;
-    }
 
     public int getId() {
 
@@ -71,11 +47,5 @@ public class User {
         return mail;
     }
 
-    public double getLatitude() {
-        return latitude;
-    }
 
-    public double getLongitude() {
-        return longitude;
-    }
 }

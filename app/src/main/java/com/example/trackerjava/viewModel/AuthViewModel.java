@@ -3,7 +3,6 @@ package com.example.trackerjava.viewModel;
 
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 import androidx.databinding.ObservableField;
 import androidx.lifecycle.ViewModel;
 import com.example.trackerjava.repository.AuthAndRegRepository;
@@ -30,31 +29,6 @@ public class AuthViewModel extends ViewModel {
 
     }
 
-  /*  @SuppressLint("CheckResult")
-    public Completable registrationUserLocalDB(String email, String password) {
-        return Completable.create(emitter -> {
-           // firebaseAuth.createUserWithEmailAndPassword(emailValue, passwordValue)
-            firebaseAuth.createUserWithEmailAndPassword(email, password)
-                    .addOnSuccessListener(authResult ->{
-                         authAndRegRepository.saveUserToRoom(email, password)
-                                         .subscribeOn(Schedulers.io())
-                                                 .observeOn(AndroidSchedulers.mainThread())
-                                                         .subscribe(() -> {
-                                                             emitter.onComplete();
-                                                         }, throwable -> {
-                                                             emitter.onError(new Exception(throwable));
-                                                                 });
-                    })
-                    .addOnFailureListener(emitter::onError);
-        });
-
-    }*/
-
-
-  /*  public Completable saveDataToRoom(String email, String password){
-        String uid = firebaseAuth.getCurrentUser().getUid();
-       return authAndRegRepository.saveUserToRoom(uid, email);
-    }*/
 
     public Completable registration(String email, String password) {
         return Completable.create(emitter -> {
@@ -66,7 +40,6 @@ public class AuthViewModel extends ViewModel {
 
     @SuppressLint("CheckResult")
     public Completable registrationUserLocalDB(String email, String password) {
-        Log.i("key", "registrationUserLocalDB");
         return registration(email, password)
                 .andThen(getCurrentUserUid())
                 .flatMapCompletable(uid ->{

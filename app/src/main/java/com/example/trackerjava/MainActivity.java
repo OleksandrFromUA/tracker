@@ -2,14 +2,11 @@ package com.example.trackerjava;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.util.Log;
-
 import com.example.trackerjava.databinding.ActivityMainBinding;
 import com.example.trackerjava.viewModel.MainViewModel;
 import com.google.firebase.auth.FirebaseAuth;
@@ -21,9 +18,9 @@ public class MainActivity extends AppCompatActivity {
     private MainViewModel mainViewModel;
     private final FirebaseAuth firebaseAuth;
     private final FirebaseUser currentUser;
-    private Toolbar toolbar;
     private final MyRoomDB myRoomDB;
     private NavController navController;
+
     public MainActivity() {
         firebaseAuth = FirebaseAuth.getInstance();
         currentUser = firebaseAuth.getCurrentUser();
@@ -52,45 +49,19 @@ public class MainActivity extends AppCompatActivity {
         MyWorker.startMyWorker(this);
 
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
-        if(currentUser != null) {
+        if (currentUser != null) {
             String currentUidUser = currentUser.getUid();
             mainViewModel.isLogged(currentUidUser).observe(this, isLogged -> {
                 if (isLogged) {
-                    Log.i("key", "переход на rackerFragment");
                     navController.navigate(R.id.action_authFragment_to_trackerFragment);
                 } else {
-                    Utilit.showToast(this, R.string.login_error);
+                    navController.navigate(R.id.action_trackerFragment_to_authFragment);
                 }
 
             });
 
-            TrackerFragment trackerFragment = (TrackerFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
-            if (trackerFragment != null) {
-                toolbar = trackerFragment.getToolbar();
-            }
-            if (toolbar != null) {
-                toolbar.setOnMenuItemClickListener(item -> {
-                    int id = item.getItemId();
-                    if (id == R.id.action_logout) {
-
-                        signOut();
-                        Log.i("key", "закрытие через логаут");
-                        myRoomDB.getDao().deleteAllUsers();
-                        navigateToAuthFragment();
-                        return true;
-                    }
-                    return false;
-                });
-            }
         }
-    }
 
-    private void navigateToAuthFragment() {
-        navController.navigate(R.id.action_trackerFragment_to_authFragment);
-    }
-    private void signOut() {
-        firebaseAuth.signOut();
     }
 
 }
-

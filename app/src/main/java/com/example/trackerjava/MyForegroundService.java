@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.IBinder;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import com.example.trackerjava.model.LocationData;
 import com.example.trackerjava.model.User;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -24,12 +25,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import java.util.HashMap;
 import java.util.Map;
-
-import io.reactivex.Completable;
-import io.reactivex.Scheduler;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
-
 
 public class MyForegroundService extends Service {
     private final FirebaseAuth firebaseAuth;
@@ -74,19 +69,25 @@ public class MyForegroundService extends Service {
         String userEmail = firebaseAuth.getCurrentUser().getEmail();
         long timeCoordinate = System.currentTimeMillis();
 
-        User user = new User(userId, userEmail, location.getLatitude(), location.getLongitude(), timeCoordinate);
+        User user = new User(userId, userEmail);
+        LocationData locationUser = new LocationData(location.getLatitude(), location.getLongitude(), timeCoordinate, 0);
 
         long newUserInRoom = myRoomDB.getDao().insertUser(user);
-        if (newUserInRoom != -1) {
+        long newCoordinateInRoom = myRoomDB.getLocationDao().insertLocation(locationUser);
+
+        if (newUserInRoom != -1 && newCoordinateInRoom != -1) {
             FirebaseUser currentUser = firebaseAuth.getCurrentUser();
                     if (currentUser != null) {
+                        long timeToServer = System.currentTimeMillis();
 
                             Map<String, Object> locationData = new HashMap<>();
+                            locationData.put("userId", userId);
                             locationData.put("latitude", location.getLatitude());
                             locationData.put("longitude", location.getLongitude());
                             locationData.put("time", timeCoordinate);
+                            locationData.put("timeToServer", timeToServer);
 
-                            DocumentReference documentReference = db.collection("users").document(userId);
+                            DocumentReference documentReference = db.collection("location").document(userId);
                             documentReference.set(locationData, SetOptions.merge())
                                     .addOnSuccessListener(aVoid -> {
                                         Utilit.showToast(this, R.string.Data_sent_to_cloud);
@@ -104,7 +105,7 @@ public class MyForegroundService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
                     CHANNEL_ID,
-                    "Location Channel Name",
+                    "LocationData Channel Name",
                     NotificationManager.IMPORTANCE_DEFAULT
             );
             NotificationManager notificationManager = getSystemService(NotificationManager.class);

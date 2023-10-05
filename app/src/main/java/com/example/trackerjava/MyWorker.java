@@ -10,6 +10,7 @@ import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
+import com.example.trackerjava.model.LocationData;
 import com.example.trackerjava.model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -25,9 +26,10 @@ import java.util.concurrent.TimeUnit;
 
 public class MyWorker extends Worker {
 
+    private final MyRoomDB myRoomDB;
     public MyWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
-
+        myRoomDB = MyRoomDB.getInstance();
 
     }
     public static void startMyWorker(Context context){
@@ -51,9 +53,11 @@ public class MyWorker extends Worker {
     public Result doWork() {
 
         try {
-            List<User> coordinatesFromRoom = getCoordinatesFromRoom();
+            List<LocationData> coordinatesFromRoom = getCoordinatesFromRoom();
+            List<User> usersFromRoom = getUsersFromRoom();
+
             if (isInternetAvailable()) {
-                boolean successSend = sendCoordinatesToFirebase(coordinatesFromRoom);
+                boolean successSend = sendCoordinatesToFirebase(usersFromRoom, coordinatesFromRoom);
                 if (successSend) {
                     deleteCoordinatesFromRoom(coordinatesFromRoom);
                     return Result.success();
@@ -73,11 +77,16 @@ public class MyWorker extends Worker {
     }
 
 
-    private List<User> getCoordinatesFromRoom() {
-        MyRoomDB myRoomDB = MyRoomDB.getInstance();
+    private List<LocationData> getCoordinatesFromRoom() {
+        LocationDao locationDao = myRoomDB.getLocationDao();
+        List<LocationData> coordinatesUsers = locationDao.getAllCoordinates();
+        return coordinatesUsers;
+    }
+
+    private List<User> getUsersFromRoom(){
         UserDao userDao = myRoomDB.getDao();
-        List<User> coordinates = userDao.getAllCoordinates();
-        return coordinates;
+        List<User> dataUsers = userDao.getUsersFromRoom();
+        return dataUsers;
     }
 
     private boolean isInternetAvailable() {
@@ -91,35 +100,43 @@ public class MyWorker extends Worker {
         return false;
     }
 
-    private boolean sendCoordinatesToFirebase(List<User> coordinates) {
+    private boolean sendCoordinatesToFirebase(List<User> users, List<LocationData> coordinates) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
 
         if (currentUser != null) {
             String uidUser = currentUser.getUid();
-            CollectionReference collectionReference = db.collection("users");
-            DocumentReference documentReference = collectionReference.document(uidUser);
+            CollectionReference userReference = db.collection("users");
+            DocumentReference documentReference = userReference.document(uidUser);
              //long timeSendCoordinate = System.currentTimeMillis();
 
-            for (User coordinate : coordinates) {
-                Map<String, Object> locationData = new HashMap<>();
-                locationData.put("latitude", coordinate.getLatitude());
-                locationData.put("longitude", coordinate.getLongitude());
-                locationData.put("timeSendCoordinate", coordinate.getCoordinateTime());
-
-                documentReference.set(locationData, SetOptions.merge());
+            for (User user : users) {
+                Map<String, Object> userData = new HashMap<>();
+                userData.put("userId", user.getId());
+                userData.put("email", user.getMail());
+                documentReference.set(userData, SetOptions.merge());
             }
+
+              CollectionReference locationReference = db.collection("location");
+            for (LocationData locationData: coordinates){
+                Map<String, Object> newLocationData = new HashMap<>();
+                newLocationData.put("userId", uidUser);
+                newLocationData.put("latitude", locationData.getLatitude());
+                newLocationData.put("longitude", locationData.getLongitude());
+                newLocationData.put("timeSendCoordinate", locationData.getCoordinateTime());
+              locationReference.add(newLocationData);
+                }
+
+
             return true;
         } else {
             return false;
         }
     }
 
-    private void deleteCoordinatesFromRoom(List<User> coordinates) {
-
-        MyRoomDB myRoomDB = MyRoomDB.getInstance();
-        myRoomDB.getDao().deleteAllCoordinates();
+    private void deleteCoordinatesFromRoom(List<LocationData> coordinates) {
+        myRoomDB.getLocationDao().deleteAllUsersByCoordination();
         Utilit.showToast(this.getApplicationContext(), R.string.coordinates_successfully_removed_from_room_database);
         }
 

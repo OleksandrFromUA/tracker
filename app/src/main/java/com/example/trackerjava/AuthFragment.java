@@ -9,14 +9,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.example.trackerjava.databinding.FragmentAuthBinding;
 import com.example.trackerjava.viewModel.AuthViewModel;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -24,7 +22,7 @@ public class AuthFragment extends Fragment {
     private FragmentAuthBinding binding;
     private AuthViewModel authViewModel;
     private FirebaseAuth firebaseAuth;
-    private FirebaseUser currentUser;
+
 
     @SuppressLint("CheckResult")
     @Override
@@ -38,7 +36,6 @@ public class AuthFragment extends Fragment {
 
 
         binding.SIGNIN.setOnClickListener(v -> {
-            Log.i("key", "SIGNIN");
             String email = binding.InputNameText.getText().toString();
             String password = binding.InputPasswordText.getText().toString();
                     if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
@@ -59,7 +56,6 @@ public class AuthFragment extends Fragment {
 
 
              binding.signUp.setOnClickListener(v -> {
-                 Log.i("key", "Registration");
             String email = binding.InputNameText.getText().toString();
             String password = binding.InputPasswordText.getText().toString();
 
