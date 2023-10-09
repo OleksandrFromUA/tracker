@@ -71,21 +71,24 @@ public class TrackerFragment extends Fragment {
             mainViewModel.deleteData();
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
+    @SuppressLint("NewApi")
     private void startTracker() {
         requestLocationPermission();
         Intent serviceIntent = new Intent(requireContext(), MyForegroundService.class);
-        requireContext().startService(serviceIntent);
+       // requireContext().startService(serviceIntent);
+        requireContext().startForegroundService(serviceIntent);
         isTracking = true;
         binding.Start.setText(R.string.stop);
     }
 
+    @SuppressLint("NewApi")
     private void stopTracker() {
         Intent serviceIntent = new Intent(requireContext(), MyForegroundService.class);
-        requireContext().stopService(serviceIntent);
+       // requireContext().stopService(serviceIntent);
+        requireContext().startForegroundService(serviceIntent);
         isTracking = false;
         binding.Start.setText(R.string.start);
     }

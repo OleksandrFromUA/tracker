@@ -1,12 +1,11 @@
 package com.example.trackerjava;
 
-import androidx.annotation.Nullable;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import com.example.trackerjava.databinding.ActivityMainBinding;
 import com.example.trackerjava.viewModel.MainViewModel;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,12 +27,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @Override
+   /* @Override
     public void onPostCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
         super.onPostCreate(savedInstanceState, persistentState);
-        navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+       // navController = Navigation.findNavController(this, R.id.nav_host_fragment);
 
-    }
+    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,27 +40,27 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        /*NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
-        NavController navController = navHostFragment.getNavController();*/
-
+        assert navHostFragment != null;
+        navController = navHostFragment.getNavController();
 
         MyWorker.startMyWorker(this);
+        setupObservation();
 
-        mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
-        if (currentUser != null) {
-            String currentUidUser = currentUser.getUid();
-            mainViewModel.isLogged(currentUidUser).observe(this, isLogged -> {
-                if (isLogged) {
-                    navController.navigate(R.id.action_authFragment_to_trackerFragment);
-                } else {
-                    navController.navigate(R.id.action_trackerFragment_to_authFragment);
-                }
-
-            });
-
+    }
+        private void setupObservation () {
+            mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
+            if (currentUser != null) {
+                String currentUidUser = currentUser.getUid();
+                mainViewModel.isLogged(currentUidUser).observe(this, isLogged -> {
+                    if (isLogged) {
+                        navController.navigate(R.id.action_authFragment_to_trackerFragment);
+                    } else {
+                        navController.navigate(R.id.action_trackerFragment_to_authFragment);
+                    }
+                });
+            }
         }
 
     }
-
-}

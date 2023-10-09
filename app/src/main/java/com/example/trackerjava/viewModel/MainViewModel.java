@@ -1,21 +1,21 @@
 package com.example.trackerjava.viewModel;
 
+
+
+import android.annotation.SuppressLint;
+import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
-import com.example.trackerjava.MyRoomDB;
 import com.example.trackerjava.repository.MainRepository;
-import com.google.firebase.auth.FirebaseAuth;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainViewModel extends ViewModel {
     private final MainRepository mainRepository;
-    private final MyRoomDB myRoomDB;
-    private final FirebaseAuth firebaseAuth;
-
 
     public MainViewModel() {
-    myRoomDB = MyRoomDB.getInstance();
-    mainRepository = new MainRepository();
-    firebaseAuth = FirebaseAuth.getInstance();
+
+        mainRepository = new MainRepository();
     }
 
     public LiveData<Boolean> isLogged(String uid){
@@ -23,10 +23,16 @@ public class MainViewModel extends ViewModel {
         return mainRepository.getRegisteredUser(uid);
     }
 
+      @SuppressLint("CheckResult")
       public void deleteData(){
-        firebaseAuth.signOut();
-        myRoomDB.getDao().deleteAllUsers();
-        myRoomDB.getLocationDao().deleteAllUsersByCoordination();
+        mainRepository.deleteDataFromRoom()
+                  .subscribeOn(Schedulers.io())
+                  .observeOn(AndroidSchedulers.mainThread())
+                  .subscribe(() -> {
+                      Log.e("tag", "Data successfully deleted");
+                  }, throwable -> {
+                      Log.e("tag", "Error occurred: " + throwable.getMessage());
+                  });
 }
 
 }

@@ -25,6 +25,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import java.util.HashMap;
 import java.util.Map;
+import io.reactivex.Completable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class MyForegroundService extends Service {
     private final FirebaseAuth firebaseAuth;
@@ -72,33 +75,42 @@ public class MyForegroundService extends Service {
         User user = new User(userId, userEmail);
         LocationData locationUser = new LocationData(location.getLatitude(), location.getLongitude(), timeCoordinate, 0);
 
-        long newUserInRoom = myRoomDB.getDao().insertUser(user);
-        long newCoordinateInRoom = myRoomDB.getLocationDao().insertLocation(locationUser);
+        Completable.fromAction(() -> {
+            long newUserInRoom = myRoomDB.getDao().insertUser(user);
+            long newCoordinateInRoom = myRoomDB.getLocationDao().insertLocation(locationUser);
 
-        if (newUserInRoom != -1 && newCoordinateInRoom != -1) {
-            FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-                    if (currentUser != null) {
-                        long timeToServer = System.currentTimeMillis();
+            if (newUserInRoom != -1 && newCoordinateInRoom != -1) {
+                FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+                if (currentUser != null) {
+                    long timeToServer = System.currentTimeMillis();
 
-                            Map<String, Object> locationData = new HashMap<>();
-                            locationData.put("userId", userId);
-                            locationData.put("latitude", location.getLatitude());
-                            locationData.put("longitude", location.getLongitude());
-                            locationData.put("time", timeCoordinate);
-                            locationData.put("timeToServer", timeToServer);
+                    Map<String, Object> locationData = new HashMap<>();
+                    locationData.put("userId", userId);
+                    locationData.put("latitude", location.getLatitude());
+                    locationData.put("longitude", location.getLongitude());
+                    locationData.put("time", timeCoordinate);
+                    locationData.put("timeToServer", timeToServer);
 
-                            DocumentReference documentReference = db.collection("location").document(userId);
-                            documentReference.set(locationData, SetOptions.merge())
-                                    .addOnSuccessListener(aVoid -> {
-                                        Utilit.showToast(this, R.string.Data_sent_to_cloud);
-                                    })
-                                    .addOnFailureListener(error -> {
-                                        Utilit.showToast(this, R.string.data_not_sent_to_cloud);
-                                    });
-                        }
-                    }
-                    }
+                    DocumentReference documentReference = db.collection("location").document(userId);
+                    documentReference.set(locationData, SetOptions.merge())
+                            .addOnSuccessListener(aVoid -> {
+                                Utilit.showToast(this, R.string.Data_sent_to_cloud);
+                            })
+                            .addOnFailureListener(error -> {
+                                Utilit.showToast(this, R.string.data_not_sent_to_cloud);
+                            });
+                }
+            }
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(() ->{
+            Utilit.showToast(this, R.string.operations_performed_successfully);
+        },throwable -> {
+            Utilit.showToast(this, R.string.failed);
+        });
 
+    }
 
 
     private void createNotificationChannel() {

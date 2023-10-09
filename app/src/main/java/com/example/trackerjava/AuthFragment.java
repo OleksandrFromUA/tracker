@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,20 +40,22 @@ public class AuthFragment extends Fragment {
             String email = binding.InputNameText.getText().toString();
             String password = binding.InputPasswordText.getText().toString();
                     if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
-                        authViewModel.singInUser(email, password)
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(() -> {
-                                    Utilit.showToast(requireContext(), R.string.user_in_the_system);
-                                  },throwable -> {
-                                    Utilit.showToast(requireContext(),R.string.this_user_is_not_in_the_system_please_register);
-                                });
+                        if (Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                            authViewModel.singInUser(email, password)
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(() -> {
+                                        Utilit.showToast(requireContext(), R.string.user_in_the_system);
+                                    }, throwable -> {
+                                        Utilit.showToast(requireContext(), R.string.this_user_is_not_in_the_system_please_register);
+                                    });
+                        } else {
+                            Utilit.showToast(requireContext(), R.string.invalid_email);
+                        }
                     }else {
                         Utilit.showToast(requireContext(), R.string.email_and_password_fields_are_empty);
                     }
-
         });
-
 
 
              binding.signUp.setOnClickListener(v -> {
@@ -60,14 +63,18 @@ public class AuthFragment extends Fragment {
             String password = binding.InputPasswordText.getText().toString();
 
             if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
-                authViewModel.registrationUserLocalDB(email, password)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(() -> {
-                            Utilit.showToast(requireContext(), R.string.success);
-                        }, throwable -> {
-                            Utilit.showToast(requireContext(), R.string.fail);
-                        });
+                if (Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    authViewModel.registrationUserLocalDB(email, password)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(() -> {
+                                Utilit.showToast(requireContext(), R.string.success);
+                            }, throwable -> {
+                                Utilit.showToast(requireContext(), R.string.fail);
+                            });
+                }else {
+                    Utilit.showToast(requireContext(), R.string.invalid_email);
+                }
             } else {
                 Utilit.showToast(requireContext(), R.string.email_and_password_fields_are_empty);
             }

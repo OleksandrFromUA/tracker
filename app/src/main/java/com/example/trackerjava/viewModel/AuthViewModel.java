@@ -1,7 +1,5 @@
 package com.example.trackerjava.viewModel;
 
-
-
 import android.annotation.SuppressLint;
 import androidx.databinding.ObservableField;
 import androidx.lifecycle.ViewModel;
@@ -12,7 +10,6 @@ import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
-
 
 public class AuthViewModel extends ViewModel {
 
@@ -35,7 +32,7 @@ public class AuthViewModel extends ViewModel {
             firebaseAuth.createUserWithEmailAndPassword(email, password)
                     .addOnSuccessListener(authResult -> emitter.onComplete())
                     .addOnFailureListener(emitter::onError);
-        });
+        }).observeOn(Schedulers.io());
     }
 
     @SuppressLint("CheckResult")
@@ -82,7 +79,7 @@ public class AuthViewModel extends ViewModel {
                     .addOnSuccessListener(authResult -> emitter.onComplete())
                     .addOnFailureListener(emitter::onError);
 
-        });
+        }).observeOn(Schedulers.io());
     }
 
     /*public Single<Boolean> isUserExistsRoom(String uid){

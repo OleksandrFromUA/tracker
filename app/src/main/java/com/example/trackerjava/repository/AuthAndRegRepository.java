@@ -1,8 +1,5 @@
 package com.example.trackerjava.repository;
 
-
-
-
 import com.example.trackerjava.MyRoomDB;
 import com.example.trackerjava.model.LocationData;
 import com.example.trackerjava.model.User;
@@ -41,7 +38,6 @@ public class AuthAndRegRepository {
     public Single<Boolean> isUserExists(String uid) {
         return Single.fromCallable(() -> myRoomDB.getDao().getUserById(uid) != null);
     }
-
 
 }
 

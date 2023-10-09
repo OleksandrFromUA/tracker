@@ -39,4 +39,8 @@
     <string name="no_internet">No internet</string>
     <string name="fail">registration failed</string>
     <string name="success">User registration in Room completed successfully</string>
+    <string name="failed_to_delete_data_from_room">Failed to delete data from Room</string>
+    <string name="invalid_email">Invalid email</string>
+    <string name="operations_performed_successfully">Operations performed successfully</string>
+    <string name="failed">Failed</string>
 </resources>

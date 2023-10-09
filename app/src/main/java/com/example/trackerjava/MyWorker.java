@@ -1,8 +1,10 @@
 package com.example.trackerjava;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.work.Constraints;
 import androidx.work.NetworkType;
@@ -22,17 +24,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import io.reactivex.Completable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 
 public class MyWorker extends Worker {
 
     private final MyRoomDB myRoomDB;
+
     public MyWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
         myRoomDB = MyRoomDB.getInstance();
 
     }
-    public static void startMyWorker(Context context){
+
+    public static void startMyWorker(Context context) {
 
         Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -46,8 +53,9 @@ public class MyWorker extends Worker {
                 .build();
 
 
-       WorkManager.getInstance(context).enqueue(syncWorkRequest);
+        WorkManager.getInstance(context).enqueue(syncWorkRequest);
     }
+
     @NonNull
     @Override
     public Result doWork() {
@@ -60,6 +68,7 @@ public class MyWorker extends Worker {
                 boolean successSend = sendCoordinatesToFirebase(usersFromRoom, coordinatesFromRoom);
                 if (successSend) {
                     deleteCoordinatesFromRoom(coordinatesFromRoom);
+                    Log.e("Worker", "deleteCoordinatesFromRoom");
                     return Result.success();
                 } else {
 
@@ -83,7 +92,7 @@ public class MyWorker extends Worker {
         return coordinatesUsers;
     }
 
-    private List<User> getUsersFromRoom(){
+    private List<User> getUsersFromRoom() {
         UserDao userDao = myRoomDB.getDao();
         List<User> dataUsers = userDao.getUsersFromRoom();
         return dataUsers;
@@ -109,7 +118,7 @@ public class MyWorker extends Worker {
             String uidUser = currentUser.getUid();
             CollectionReference userReference = db.collection("users");
             DocumentReference documentReference = userReference.document(uidUser);
-             //long timeSendCoordinate = System.currentTimeMillis();
+            //long timeSendCoordinate = System.currentTimeMillis();
 
             for (User user : users) {
                 Map<String, Object> userData = new HashMap<>();
@@ -118,15 +127,15 @@ public class MyWorker extends Worker {
                 documentReference.set(userData, SetOptions.merge());
             }
 
-              CollectionReference locationReference = db.collection("location");
-            for (LocationData locationData: coordinates){
+            CollectionReference locationReference = db.collection("location");
+            for (LocationData locationData : coordinates) {
                 Map<String, Object> newLocationData = new HashMap<>();
                 newLocationData.put("userId", uidUser);
                 newLocationData.put("latitude", locationData.getLatitude());
                 newLocationData.put("longitude", locationData.getLongitude());
                 newLocationData.put("timeSendCoordinate", locationData.getCoordinateTime());
-              locationReference.add(newLocationData);
-                }
+                locationReference.add(newLocationData);
+            }
 
 
             return true;
@@ -135,9 +144,15 @@ public class MyWorker extends Worker {
         }
     }
 
+    @SuppressLint("CheckResult")
     private void deleteCoordinatesFromRoom(List<LocationData> coordinates) {
-        myRoomDB.getLocationDao().deleteAllUsersByCoordination();
-        Utilit.showToast(this.getApplicationContext(), R.string.coordinates_successfully_removed_from_room_database);
-        }
-
+        Completable.fromAction(() -> myRoomDB.getLocationDao().deleteAllUsersByCoordination())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> { Utilit.showToast(this.getApplicationContext(),
+                        R.string.coordinates_successfully_removed_from_room_database);
+    }, throwable -> {
+                    Utilit.showToast(this.getApplicationContext(), R.string.failed_to_delete_data_from_room);
+                });
+    }
 }
