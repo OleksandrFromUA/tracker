@@ -80,6 +80,9 @@ dependencies {
     implementation ("androidx.work:work-runtime:2.7.0")
 
     implementation ("com.google.android.gms:play-services-location:21.0.1")
+    //noinspection GradleDependency
+    implementation ("androidx.core:core:1.10.1")
 
+    implementation ("com.google.firebase:firebase-messaging:23.2.1")
 }
 

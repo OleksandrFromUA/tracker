@@ -42,7 +42,7 @@ public class AuthViewModel extends ViewModel {
                 .flatMapCompletable(uid ->{
                     return authAndRegRepository.isUserExists(uid)
                             .flatMapCompletable(userExist ->{
-                                if ((userExist)){
+                                if (userExist != null){
                                     return Completable.complete();
                                 }else {
                                    return authAndRegRepository.saveUserToRoom(uid, email)
@@ -81,11 +81,6 @@ public class AuthViewModel extends ViewModel {
 
         }).observeOn(Schedulers.io());
     }
-
-    /*public Single<Boolean> isUserExistsRoom(String uid){
-        return authAndRegRepository.isUserExists(uid);
-    }*/
-
 
 }
 

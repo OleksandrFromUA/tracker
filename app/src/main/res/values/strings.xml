@@ -43,4 +43,10 @@
     <string name="invalid_email">Invalid email</string>
     <string name="operations_performed_successfully">Operations performed successfully</string>
     <string name="failed">Failed</string>
+    <string name="Настройки_уведомлений_доступны">Настройки уведомлений доступны</string>
+    <string name="Настройки_уведомлений_недоступны">Настройки уведомлений недоступны</string>
+    <string name="Служба_уведомлений_недоступна">Служба уведомлений недоступна</string>
+    <string name="notification_permission_denied">notification permission denied</string>
+    <string name="gps_is_off">GPS is off</string>
+    <string name="the_user_did_not_grant_both_permissions">The user did not grant both permissions</string>
 </resources>

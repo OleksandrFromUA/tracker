@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="CoarseFineLocation">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"
-        tools:ignore="CoarseFineLocation" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="com.example.trackerjava.permission.C2D_MESSAGE" />
+    <permission
+        android:name="com.example.trackerjava.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+
+
 
     <application
         android:name=".MyApplication"
@@ -34,8 +43,10 @@
         </activity>
         <service
             android:name=".MyForegroundService"
+            android:foregroundServiceType="location"
             android:enabled="true"
-            android:exported="false"/>
+            android:exported="false"
+            android:stopWithTask="true"/>
 
     </application>
 

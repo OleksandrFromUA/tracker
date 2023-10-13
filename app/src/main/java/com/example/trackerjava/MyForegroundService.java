@@ -9,8 +9,10 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.ServiceCompat;
 import com.example.trackerjava.model.LocationData;
 import com.example.trackerjava.model.User;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -127,10 +129,17 @@ public class MyForegroundService extends Service {
 
     private void startForegroundService(){
         Notification notification = createNotification();
+        Log.e("log", "получаю нотификацию в MyForegroundService");
         startForeground(1, notification);
     }
 
+    private void stopForeground() {
+        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
+    }
+
+
     private Notification createNotification(){
+        Log.e("log", "создаю нотификацию в MyForegroundService");
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this,  CHANNEL_ID)
                 .setContentTitle("My Foreground Service")
                 .setContentText("Tracking your location...")
@@ -170,5 +179,11 @@ public class MyForegroundService extends Service {
     public IBinder onBind(Intent intent) {
 
         return null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        stopForeground();
     }
 }
