@@ -10,6 +10,7 @@ import java.util.List;
 
 @Dao
 public interface UserDao {
+
     @Insert
     long insertUser(User user);
     @Transaction

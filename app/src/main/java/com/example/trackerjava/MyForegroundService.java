@@ -9,12 +9,10 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.Build;
 import android.os.IBinder;
-import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.ServiceCompat;
 import com.example.trackerjava.model.LocationData;
-import com.example.trackerjava.model.User;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -69,19 +67,16 @@ public class MyForegroundService extends Service {
 
 
     @SuppressLint("CheckResult")
-    private void saveLocationData(Location location) {
+      private void saveLocationData(Location location) {
         String userId = firebaseAuth.getCurrentUser().getUid();
-        String userEmail = firebaseAuth.getCurrentUser().getEmail();
         long timeCoordinate = System.currentTimeMillis();
 
-        User user = new User(userId, userEmail);
         LocationData locationUser = new LocationData(location.getLatitude(), location.getLongitude(), timeCoordinate, 0);
 
         Completable.fromAction(() -> {
-            long newUserInRoom = myRoomDB.getDao().insertUser(user);
             long newCoordinateInRoom = myRoomDB.getLocationDao().insertLocation(locationUser);
 
-            if (newUserInRoom != -1 && newCoordinateInRoom != -1) {
+             if (newCoordinateInRoom != -1) {
                 FirebaseUser currentUser = firebaseAuth.getCurrentUser();
                 if (currentUser != null) {
                     long timeToServer = System.currentTimeMillis();
@@ -129,7 +124,6 @@ public class MyForegroundService extends Service {
 
     private void startForegroundService(){
         Notification notification = createNotification();
-        Log.e("log", "получаю нотификацию в MyForegroundService");
         startForeground(1, notification);
     }
 
@@ -139,7 +133,6 @@ public class MyForegroundService extends Service {
 
 
     private Notification createNotification(){
-        Log.e("log", "создаю нотификацию в MyForegroundService");
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this,  CHANNEL_ID)
                 .setContentTitle("My Foreground Service")
                 .setContentText("Tracking your location...")

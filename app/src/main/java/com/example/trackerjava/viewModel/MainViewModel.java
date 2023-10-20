@@ -1,7 +1,5 @@
 package com.example.trackerjava.viewModel;
 
-
-
 import android.annotation.SuppressLint;
 import android.util.Log;
 import androidx.lifecycle.LiveData;
@@ -9,26 +7,26 @@ import androidx.lifecycle.ViewModel;
 import com.example.trackerjava.model.User;
 import com.example.trackerjava.repository.MainRepository;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class MainViewModel extends ViewModel {
     private final MainRepository mainRepository;
-    private LiveData<User> userLiveData;
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
+
     public MainViewModel() {
 
         mainRepository = new MainRepository();
     }
-
     public LiveData<User> isLogged(String uid){
-        if (userLiveData == null) {
-            userLiveData = mainRepository.getRegisteredUser(uid);
-        }
-       return userLiveData;
-
+        Log.e("red", "зашли в метод isLogged в MainViewModel");
+        return mainRepository.getRegisteredUser(uid);
     }
+
     @SuppressLint("CheckResult")
       public void deleteData(){
-        mainRepository.deleteDataFromRoom()
+       Disposable disposable = mainRepository.deleteDataFromRoom()
                   .subscribeOn(Schedulers.io())
                   .observeOn(AndroidSchedulers.mainThread())
                   .subscribe(() -> {
@@ -36,6 +34,14 @@ public class MainViewModel extends ViewModel {
                   }, throwable -> {
                       Log.e("tag", "Error occurred: " + throwable.getMessage());
                   });
+       compositeDisposable.add(disposable);
+
 }
 
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        compositeDisposable.clear();
+
+    }
 }

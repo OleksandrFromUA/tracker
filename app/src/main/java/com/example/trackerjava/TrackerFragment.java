@@ -117,30 +117,6 @@ public class TrackerFragment extends Fragment {
         builder.create().show();
     }
 
-   /* @RequiresApi(api = Build.VERSION_CODES.Q)
-    private void requestLocationPermission() {
-         requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
-        }
-    }*/
-
-   /* @SuppressLint({"CheckResult", "NewApi"})
-    private final ActivityResultLauncher<String> requestPermissionLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                if (isGranted) {
-                    isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-                    if (isGpsEnabled) {
-                        requestNotificationPermission();
-                        Utilit.showToast(requireContext(), R.string.gps_on);
-                    } else {
-                        showGpsDialog();
-                    }
-                } else {
-                    Utilit.showToast(requireContext(), R.string.permission_to_locate_is_denied);
-                }
-            });*/
-
     @RequiresApi(api = Build.VERSION_CODES.Q)
     private void requestNotificationPermission() {
         NotificationManager notificationManager = (NotificationManager) requireContext().getSystemService(Context.NOTIFICATION_SERVICE);
@@ -168,7 +144,8 @@ public class TrackerFragment extends Fragment {
     private void requestLocationAndNotificationPermission() {
         @SuppressLint("InlinedApi") String[] permissions = {
                 Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.POST_NOTIFICATIONS
+                Manifest.permission.POST_NOTIFICATIONS,
+                Manifest.permission.ACCESS_COARSE_LOCATION
         };
         requestPermissionLauncher.launch(permissions);
     }
@@ -183,8 +160,10 @@ public class TrackerFragment extends Fragment {
                 }
                     if (isGranted.containsKey(Manifest.permission.ACCESS_FINE_LOCATION) &&
                         isGranted.containsKey(Manifest.permission.POST_NOTIFICATIONS) &&
+                            isGranted.containsKey(Manifest.permission.ACCESS_COARSE_LOCATION)&&
                         Boolean.TRUE.equals(isGranted.get(Manifest.permission.ACCESS_FINE_LOCATION)) &&
-                        Boolean.TRUE.equals(isGranted.get(Manifest.permission.POST_NOTIFICATIONS))) {
+                        Boolean.TRUE.equals(isGranted.get(Manifest.permission.POST_NOTIFICATIONS))&&
+                    Boolean.TRUE.equals(isGranted.get(Manifest.permission.ACCESS_COARSE_LOCATION))) {
 
                     if (checkGpsAndStartService()) {
                    // if (checkGpsEnabled()) {

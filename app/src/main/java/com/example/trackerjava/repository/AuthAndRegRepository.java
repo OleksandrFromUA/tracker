@@ -1,5 +1,6 @@
 package com.example.trackerjava.repository;
 
+import android.util.Log;
 import com.example.trackerjava.MyRoomDB;
 import com.example.trackerjava.model.LocationData;
 import com.example.trackerjava.model.User;
@@ -7,6 +8,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import io.reactivex.Completable;
 import io.reactivex.Single;
+import io.reactivex.functions.Action;
+import io.reactivex.schedulers.Schedulers;
 
 public class AuthAndRegRepository {
     private MyRoomDB myRoomDB;
@@ -35,10 +38,38 @@ public class AuthAndRegRepository {
         });
     }
 
-    public Single<Boolean> isUserExists(String uid) {
-        return Single.fromCallable(() -> myRoomDB.getDao().getUserById(uid) != null);
+    public void saveToLocal(String email) {
+        Completable.fromAction(new Action() {
+            @Override
+            public void run() throws Exception {
+                User user = new User(firebaseAuth.getCurrentUser().getUid(), email);
+                LocationData locationData = new LocationData(0, 0, 0, 0);
+                myRoomDB.getDao().insertUser(user);
+                myRoomDB.getLocationDao().insertLocation(locationData);
+            }
+        }).subscribeOn(Schedulers.io()).subscribe();
     }
 
-}
+
+  /* public Completable saveToLocal(String email) {
+      return Completable.fromAction(new Action() {
+           @Override
+           public void run() throws Exception {
+               User user = new User(firebaseAuth.getCurrentUser().getUid(), email);
+               LocationData locationData = new LocationData(0, 0, 0, 0);
+               myRoomDB.getDao().insertUser(user);
+               myRoomDB.getLocationDao().insertLocation(locationData);
+           }
+       }).subscribeOn(Schedulers.io());
+   }*/
+
+    public Single<Boolean> isUserExists(String uid) {
+        Log.e("apple", "достаем данные в методе isUserExists с бд в AuthAndRegRepository ");
+        return Single.fromCallable(() -> myRoomDB.getDao().getUserById(uid) != null );
+    }
+
+
+
+    }
 
 

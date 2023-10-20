@@ -25,15 +25,6 @@ public class MainActivity extends AppCompatActivity {
         currentUser = firebaseAuth.getCurrentUser();
         myRoomDB = MyRoomDB.getInstance();
     }
-
-
-   /* @Override
-    public void onPostCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
-        super.onPostCreate(savedInstanceState, persistentState);
-       // navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-
-    }*/
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,16 +40,22 @@ public class MainActivity extends AppCompatActivity {
         setupObservation();
 
     }
-       private void setupObservation () {
+
+    private void setupObservation () {
+           Log.e("red", "зашли в метод setupObservation() в Мейн Активити");
            if (currentUser != null) {
                String currentUidUser = currentUser.getUid();
                mainViewModel.isLogged(currentUidUser).observe(this, isLogged -> {
+                   Log.e("red", "подписываемся на ЛайвДату в Мейн Активити");
                    if (isLogged != null) {
+                       Log.e("red", "производим навигацию на trackerFragment");
                        navController.navigate(R.id.action_authFragment_to_trackerFragment);
                    } else {
-                        navController.navigate(R.id.action_trackerFragment_to_authFragment);
+                       Log.e("red", "находимся на Фрагменте аутентификации");
+                       navController.navigate(R.id.action_trackerFragment_to_authFragment);
                    }
                });
            }
        }
+
     }
