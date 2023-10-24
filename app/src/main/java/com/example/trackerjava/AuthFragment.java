@@ -40,17 +40,26 @@ public class AuthFragment extends Fragment {
             String password = binding.InputPasswordText.getText().toString();
             if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
                 if (Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                    Log.e("apple", "нажимаем SIGNIN и заходим в метод singInUser в AuthFragment");
                     authViewModel.singInUser(email, password)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(() -> {
-                                authViewModel.justSave(email).subscribeOn(Schedulers.io())
-                                        .observeOn(AndroidSchedulers.mainThread());
-                                            Utilit.showToast(requireContext(), R.string.user_in_the_system);
+                            authViewModel.justSave(email)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread());
+                                Utilit.showToast(requireContext(), R.string.user_in_the_system);
                             }, throwable -> {
                                 Utilit.showToast(requireContext(), R.string.this_user_is_not_in_the_system_please_register);
                             });
+                           /* .andThen(authViewModel.justSave(email))
+                                        .subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe(() -> {
+                                            Utilit.showToast(requireContext(), R.string.user_in_the_system);
+                                        }, throwable -> {
+                                            Utilit.showToast(requireContext(), R.string.this_user_is_not_in_the_system_please_register);
+                                        });*/
+
                 } else {
                     Utilit.showToast(requireContext(), R.string.invalid_email);
                 }
@@ -85,5 +94,6 @@ public class AuthFragment extends Fragment {
 
         return binding.getRoot();
     }
+
 }
 

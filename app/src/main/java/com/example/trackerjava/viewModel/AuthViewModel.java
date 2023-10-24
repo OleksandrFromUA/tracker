@@ -9,6 +9,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import io.reactivex.Completable;
 import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -41,103 +42,25 @@ public class AuthViewModel extends ViewModel {
 
     @SuppressLint("CheckResult")
     public Completable justSave(String email) {
-        Completable signInCompletable = Single.defer(() -> authAndRegRepository.isUserExists(firebaseAuth.getCurrentUser().getUid()))
-                .flatMapCompletable(userExist -> {
-                    if (userExist) {
-                        Log.e("code", "User in the system(Room)");
-                        return Completable.complete();
-                    } else {
-                        return Completable.defer(() -> {
-                            try {
-                                authAndRegRepository.saveToLocal(email);
-                                Log.e("code", "User in the system(Room) after saveToLocal()");
-                                return Completable.complete();
-                            } catch (Exception e) {
-                                return Completable.error(e);
-                            }
-                        });
-                    }
-                })
-                .observeOn(Schedulers.io());
-        //  .subscribeOn(AndroidSchedulers.mainThread())
-        Disposable disposable = signInCompletable.subscribe(() -> {
-            Log.e("app", "Succes");
-        }, throwable -> {
-            Log.e("app", "Fail");
-        });
+        return Completable.fromAction(() ->  authAndRegRepository.saveToLocal(email)).subscribeOn(Schedulers.io());
 
-        compositeDisposable.add(disposable);
-        return signInCompletable;
     }
-
-    /*@SuppressLint("CheckResult")
-    public Completable registrationUserLocalDB(String email, String password) {
-        Completable signInCompletable2 = registration(email, password)
-                .andThen(getCurrentUserUid())
-                .flatMapCompletable(uid -> {
-                    Log.e("app", "вызываем метод isUserExists в AuthViewModel");
-                    return authAndRegRepository.isUserExists(uid)
-                            .flatMapCompletable(userExist -> {
-                                if (userExist) {
-                                    Log.e("app", "находимся в методе registrationUserLocalDB в AuthViewModel");
-
-                                    return Completable.complete();
-
-                                } else {
-                                    return authAndRegRepository.saveUserToRoom(uid, email)
-                                            .onErrorResumeNext(throwable -> {
-                                                return Completable.error(new Exception("Failed to save user to Room database"));
-                                            });
-                                }
-                            })
-                            .onErrorResumeNext(throwable -> {
-                                return Completable.error(new Exception("Error checking user in Room database"));
-                            });
-                })
-                .onErrorResumeNext(throwable -> {
-                    return Completable.error(new Exception("Error during registration process"));
-                })
-                .subscribeOn(Schedulers.io());
-        Disposable disposable2 = signInCompletable2.subscribe(() -> {
-            Log.e("app", "Succes2");
-        }, throwable -> {
-            Log.e("app", "Fail2");
-        });
-
-        compositeDisposable.add(disposable2);
-        return signInCompletable2;
-
-    }*/
 
     @SuppressLint("CheckResult")
     public Completable registrationUserLocalDB(String email, String password) {
         return registration(email, password)
                 .andThen(getCurrentUserUid())
                 .flatMapCompletable(uid -> {
-                    Log.e("app", "вызываем метод isUserExists в AuthViewModel");
-                    return authAndRegRepository.isUserExists(uid)
-                            .flatMapCompletable(userExist -> {
-                                if (userExist) {
-                                    Log.e("app", "находимся в методе registrationUserLocalDB в AuthViewModel");
-                                    return Completable.complete();
-
-                                } else {
-                                    return authAndRegRepository.saveUserToRoom(uid, email)
-                                            .onErrorResumeNext(throwable -> {
-                                                return Completable.error(new Exception("Failed to save user to Room database"));
-                                            });
-                                }
-                            })
+                    return authAndRegRepository.saveUserToRoom(uid, email)
+                            .subscribeOn(Schedulers.io())
                             .onErrorResumeNext(throwable -> {
-                                return Completable.error(new Exception("Error checking user in Room database"));
-                            });
-                })
-                .onErrorResumeNext(throwable -> {
-                    return Completable.error(new Exception("Error during registration process"));
-                })
-                .subscribeOn(Schedulers.io());
+                                return Completable.error(new Exception("Error : " + throwable.getMessage()));
+                            })
+                            .andThen(Completable.complete());
+                            }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
 
     }
+
 
     private Single<String> getCurrentUserUid() {
         return Single.create(emitter -> {
