@@ -79,7 +79,7 @@ public class MyForegroundService extends Service {
              if (newCoordinateInRoom != -1) {
                 FirebaseUser currentUser = firebaseAuth.getCurrentUser();
                 if (currentUser != null) {
-                    long timeToServer = System.currentTimeMillis();
+                      long timeToServer = System.currentTimeMillis();
 
                     Map<String, Object> locationData = new HashMap<>();
                     locationData.put("userId", userId);
@@ -96,8 +96,12 @@ public class MyForegroundService extends Service {
                             .addOnFailureListener(error -> {
                                 Utilit.showToast(this, R.string.data_not_sent_to_cloud);
                             });
+                }else {
+                    Utilit.showToast(this, R.string.current_user_is_missing);
                 }
-            }
+            }else {
+                 Utilit.showToast(this, R.string.db_is_empty);
+             }
         })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

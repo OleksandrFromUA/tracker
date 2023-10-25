@@ -49,4 +49,8 @@
     <string name="notification_permission_denied">notification permission denied</string>
     <string name="gps_is_off">GPS is off</string>
     <string name="the_user_did_not_grant_both_permissions">The user did not grant both permissions</string>
+    <string name="Пользователь_сохранен">Пользователь сохранен</string>
+    <string name="Не_получилось_сохранить_пользователя">Не получилось сохранить пользователя, повторите еще раз</string>
+    <string name="db_is_empty">DB is empty</string>
+    <string name="current_user_is_missing">Current user is missing</string>
 </resources>

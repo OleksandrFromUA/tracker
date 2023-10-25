@@ -57,7 +57,6 @@ public class TrackerFragment extends Fragment {
 
         binding.Start.setOnClickListener(tracking -> {
             if (!isTracking) {
-                // startTracker();
                 requestLocationAndNotificationPermission();
             } else {
                 stopTracker();
@@ -85,7 +84,6 @@ public class TrackerFragment extends Fragment {
 
     @SuppressLint("NewApi")
     private void startTracker() {
-        //  requestLocationPermission();
         Intent serviceIntent = new Intent(requireContext(), MyForegroundService.class);
         requireContext().startForegroundService(serviceIntent);
         isTracking = true;
@@ -166,23 +164,15 @@ public class TrackerFragment extends Fragment {
                     Boolean.TRUE.equals(isGranted.get(Manifest.permission.ACCESS_COARSE_LOCATION))) {
 
                     if (checkGpsAndStartService()) {
-                   // if (checkGpsEnabled()) {
-                        startTracker();
-                      /*  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                            requestNotificationPermission();
-                        }*/
-                    } else {
+                         startTracker();
+                        } else {
                         Utilit.showToast(requireContext(), R.string.gps_is_off);
                         showGpsDialog();
                     }
-                    Utilit.showToast(requireContext(), R.string.the_user_did_not_grant_both_permissions);
-                }
+                   }else{
+                        Utilit.showToast(requireContext(), R.string.the_user_did_not_grant_both_permissions);
+                    }
             });
-
-    /*private boolean checkGpsEnabled() {
-        isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        return isGpsEnabled;
-    }*/
 
      private boolean checkGpsAndStartService() {
         isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
