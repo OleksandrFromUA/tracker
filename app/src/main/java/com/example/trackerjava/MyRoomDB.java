@@ -16,7 +16,6 @@ public abstract class MyRoomDB extends RoomDatabase {
         if(instance == null){
             instance = Room.databaseBuilder(MyApplication.getAppContext(),
                             MyRoomDB.class, "location_database")
-                    .fallbackToDestructiveMigration()
                     .build();
         }
         return instance;

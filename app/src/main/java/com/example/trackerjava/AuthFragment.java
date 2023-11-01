@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,9 +49,9 @@ public class AuthFragment extends Fragment {
                                                 .subscribeOn(Schedulers.io())
                                                 .observeOn(AndroidSchedulers.mainThread())
                                                 .subscribe(() -> {
-                                                    Utilit.showToast(requireContext(), R.string.Пользователь_сохранен);
+                                                    Log.e("log", getString(R.string.Пользователь_сохранен));
                                                 }, throwable -> {
-                                                    Utilit.showToast(requireContext(),R.string.Не_получилось_сохранить_пользователя);
+                                                    Log.e("log", getString(R.string.Не_получилось_сохранить_пользователя));
                                                 });
                                     },throwable -> {
                                 Utilit.showToast(requireContext(), R.string.this_user_is_not_in_the_system_please_register);
@@ -74,7 +75,7 @@ public class AuthFragment extends Fragment {
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(() ->{
-    Utilit.showToast(requireContext(), R.string.success);
+                                Utilit.showToast(requireContext(), R.string.success);
                             }, throwable -> {
                                 Utilit.showToast(requireContext(), R.string.fail);
                             });

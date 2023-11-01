@@ -38,7 +38,7 @@
     <string name="failed_to_send_data_to_the_cloud">Failed to send data to the cloud</string>
     <string name="no_internet">No internet</string>
     <string name="fail">registration failed</string>
-    <string name="success">User registration in Room completed successfully</string>
+    <string name="success">User registration completed successfully</string>
     <string name="failed_to_delete_data_from_room">Failed to delete data from Room</string>
     <string name="invalid_email">Invalid email</string>
     <string name="operations_performed_successfully">Operations performed successfully</string>
@@ -53,4 +53,7 @@
     <string name="Не_получилось_сохранить_пользователя">Не получилось сохранить пользователя, повторите еще раз</string>
     <string name="db_is_empty">DB is empty</string>
     <string name="current_user_is_missing">Current user is missing</string>
+    <string name="succes_in_method_singinuser">Succes in method singInUser</string>
+    <string name="my_foreground_service">My Foreground Service</string>
+    <string name="tracking_your_location">Tracking your location...</string>
 </resources>

@@ -1,5 +1,7 @@
 package com.example.trackerjava.viewModel;
 
+
+
 import android.annotation.SuppressLint;
 import android.util.Log;
 import androidx.databinding.ObservableField;
@@ -27,17 +29,11 @@ public class AuthViewModel extends ViewModel {
     }
 
     public Completable registration(String email, String password) {
-      //  Completable signInCompletable4 = Completable.create(emitter -> {
        return Completable.create(emitter -> {
             firebaseAuth.createUserWithEmailAndPassword(email, password)
                     .addOnSuccessListener(authResult -> emitter.onComplete())
                     .addOnFailureListener(emitter::onError);
         }).subscribeOn(Schedulers.io());
-       /* Disposable disposable4 = compositeDisposable4.subscribe(()->{
-        },throwable -> {
-        });
-        compositeDisposable4.add(disposable4);
-        return ff;*/
     }
 
     @SuppressLint("CheckResult")
@@ -83,9 +79,9 @@ public class AuthViewModel extends ViewModel {
         }).subscribeOn(Schedulers.io());
 
         Disposable disposable3 = signInCompletable3.subscribe(() -> {
-            Log.e("app", "Succes3");
+            Log.i("app", "Success in method singInUser");
         }, throwable -> {
-            Log.e("app", "Fail3");
+            Log.e("app", "Fail in method singInUser");
         });
 
         compositeDisposable.add(disposable3);

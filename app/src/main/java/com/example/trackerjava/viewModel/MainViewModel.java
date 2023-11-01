@@ -19,9 +19,9 @@ public class MainViewModel extends ViewModel {
 
         mainRepository = new MainRepository();
     }
-    public LiveData<User> isLogged(String uid){
-        Log.e("red", "зашли в метод isLogged в MainViewModel");
-        return mainRepository.getRegisteredUser(uid);
+    public LiveData<User> isLogged(){
+
+        return mainRepository.getRegisteredUser();
     }
 
     @SuppressLint("CheckResult")

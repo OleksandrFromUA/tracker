@@ -68,15 +68,14 @@ public class MyWorker extends Worker {
                 boolean successSend = sendCoordinatesToFirebase(usersFromRoom, coordinatesFromRoom);
                 if (successSend) {
                     deleteCoordinatesFromRoom(coordinatesFromRoom);
-                    Log.e("Worker", "deleteCoordinatesFromRoom");
+                    Log.e("log", "deleteCoordinatesFromRoom");
                     return Result.success();
                 } else {
-
-                    Utilit.showToast(this.getApplicationContext(), R.string.failed_to_send_data_to_the_cloud);
+                    Log.e("log", "Failed to send data to the cloud");
                     return Result.retry();
                 }
             } else {
-                Utilit.showToast(this.getApplicationContext(), R.string.no_internet);
+                Log.e("log", "No internet");
                 return Result.retry();
             }
         } catch (Exception e) {
@@ -118,7 +117,6 @@ public class MyWorker extends Worker {
             String uidUser = currentUser.getUid();
             CollectionReference userReference = db.collection("users");
             DocumentReference documentReference = userReference.document(uidUser);
-            //long timeSendCoordinate = System.currentTimeMillis();
 
             for (User user : users) {
                 Map<String, Object> userData = new HashMap<>();
@@ -136,8 +134,6 @@ public class MyWorker extends Worker {
                 newLocationData.put("timeSendCoordinate", locationData.getCoordinateTime());
                 locationReference.add(newLocationData);
             }
-
-
             return true;
         } else {
             return false;
@@ -149,10 +145,10 @@ public class MyWorker extends Worker {
         Completable.fromAction(() -> myRoomDB.getLocationDao().deleteAllUsersByCoordination())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> { Utilit.showToast(this.getApplicationContext(),
-                        R.string.coordinates_successfully_removed_from_room_database);
+                .subscribe(() -> {
+                    Log.e("log", "Coordinates successfully removed from Room database");
     }, throwable -> {
-                    Utilit.showToast(this.getApplicationContext(), R.string.failed_to_delete_data_from_room);
+                    Log.e("log", "Failed to delete data from Room");
                 });
     }
 }

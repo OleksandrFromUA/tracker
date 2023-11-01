@@ -1,7 +1,7 @@
 package com.example.trackerjava.repository;
 
 
-import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import com.example.trackerjava.MyRoomDB;
 import com.example.trackerjava.UserDao;
@@ -19,13 +19,11 @@ public class MainRepository {
         myRoomDB = MyRoomDB.getInstance();
         userDao = myRoomDB.getDao();
         firebaseAuth = FirebaseAuth.getInstance();
-
     }
-  public LiveData<User> getRegisteredUser(String uid) {
-      Log.e("red", "зашли в метод getRegisteredUser в MainRepository");
-
+  public LiveData<User> getRegisteredUser() {
+      String uid = firebaseAuth.getCurrentUser().getUid();
       return myRoomDB.getDao().getUserById(uid);
-    }
+  }
 
     public Completable deleteDataFromRoom(){
         return Completable.fromAction(() ->{

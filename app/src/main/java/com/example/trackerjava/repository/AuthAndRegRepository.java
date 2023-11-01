@@ -31,7 +31,6 @@ public class AuthAndRegRepository {
                 emitter.onComplete();
             } else {
                 emitter.onError(new Exception("Failed to insert user into Room database"));
-
             }
         });
     }
@@ -44,20 +43,6 @@ public class AuthAndRegRepository {
             myRoomDB.getLocationDao().insertLocation(locationData);
         }).subscribeOn(Schedulers.io()).subscribe();
     }
-
-
-  /*public Single<Boolean> isUserExists(String uid) {
-      return Single.create(emitter -> {
-          LiveData<User> userLiveData = myRoomDB.getDao().getUserById(uid);
-          User user = userLiveData.getValue();
-          if(user != null){
-           emitter.onSuccess(true);
-        }else {
-            emitter.onError(new Exception("Пользователя нет в системе"));
-        }
-
-      });
-  }*/
 
     }
 

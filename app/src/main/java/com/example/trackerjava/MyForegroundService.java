@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.ServiceCompat;
@@ -30,33 +31,21 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class MyForegroundService extends Service {
-    private final FirebaseAuth firebaseAuth;
-    private final FirebaseFirestore db;
     private final MyRoomDB myRoomDB;
     private static final String CHANNEL_ID = "my_channel_id";
     private FusedLocationProviderClient fusedLocationProviderClient;
-    private LocationCallback locationCallback;
-    private LocationRequest locationRequest;
-
 
     public MyForegroundService() {
-        firebaseAuth = FirebaseAuth.getInstance();
         myRoomDB = MyRoomDB.getInstance();
-        db = FirebaseFirestore.getInstance();
     }
-
 
     @Override
     public void onCreate() {
         super.onCreate();
         createNotificationChannel();
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        setupLocationRequest();
-        setupLocationCallback();
         setupLocationUpdates();
-
     }
-
 
     @SuppressLint("CheckResult")
     @Override
@@ -68,6 +57,9 @@ public class MyForegroundService extends Service {
 
     @SuppressLint("CheckResult")
       private void saveLocationData(Location location) {
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+        final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+
         String userId = firebaseAuth.getCurrentUser().getUid();
         long timeCoordinate = System.currentTimeMillis();
 
@@ -91,24 +83,25 @@ public class MyForegroundService extends Service {
                     DocumentReference documentReference = db.collection("location").document(userId);
                     documentReference.set(locationData, SetOptions.merge())
                             .addOnSuccessListener(aVoid -> {
-                                Utilit.showToast(this, R.string.Data_sent_to_cloud);
+                                Log.i("log", getString(R.string.Data_sent_to_cloud));
+                                deleteDataFromRoom(locationUser);
                             })
                             .addOnFailureListener(error -> {
-                                Utilit.showToast(this, R.string.data_not_sent_to_cloud);
+                                Log.i("log", getString(R.string.data_not_sent_to_cloud));
                             });
                 }else {
-                    Utilit.showToast(this, R.string.current_user_is_missing);
+                    Log.i("log", getString(R.string.current_user_is_missing));
                 }
             }else {
-                 Utilit.showToast(this, R.string.db_is_empty);
+                 Log.i("log", getString(R.string.db_is_empty));
              }
         })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
         .subscribe(() ->{
-            Utilit.showToast(this, R.string.operations_performed_successfully);
+            Log.i("log", getString(R.string.operations_performed_successfully));
         },throwable -> {
-            Utilit.showToast(this, R.string.failed);
+            Log.i("log", getString(R.string.failed));
         });
 
     }
@@ -138,38 +131,42 @@ public class MyForegroundService extends Service {
 
     private Notification createNotification(){
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this,  CHANNEL_ID)
-                .setContentTitle("My Foreground Service")
-                .setContentText("Tracking your location...")
+                .setContentTitle(getString(R.string.my_foreground_service))
+                .setContentText(getString(R.string.tracking_your_location))
                 .setSmallIcon(R.drawable.location_searching)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         return builder.build();
     }
 
-    private void setupLocationRequest() {
-        LocationRequest.Builder builder = new LocationRequest.Builder(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
-                .setIntervalMillis(10 * 60 * 1000)
-                .setMinUpdateDistanceMeters(60.0f);
-        locationRequest = builder.build();
-    }
+   @SuppressLint("MissingPermission")
+   private void setupLocationUpdates() {
+       LocationRequest.Builder builder = new LocationRequest.Builder(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
+               .setIntervalMillis(10 * 60 * 1000)
+               .setMinUpdateDistanceMeters(60.0f);
+       LocationCallback locationCallback = new LocationCallback() {
+           @Override
+           public void onLocationResult(LocationResult locationResult) {
+               if (locationResult != null) {
+                   Location location = locationResult.getLastLocation();
+                   saveLocationData(location);
+               }
+           }
+       };
+       fusedLocationProviderClient.requestLocationUpdates(builder.build(), locationCallback, null);
+   }
 
-    private void setupLocationCallback() {
-        locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                if (locationResult != null) {
-                    Location location = locationResult.getLastLocation();
-                    saveLocationData(location);
-                }
-            }
-        };
+    @SuppressLint("CheckResult")
+    private void deleteDataFromRoom(LocationData locationData){
+        Completable.fromAction(()-> myRoomDB.getLocationDao().deleteLocationFromRoom(locationData))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(()->{
+                    Log.e("log", "Coordinates successfully removed from Room database");
+                }, throwable -> {
+                    Log.e("log", "Failed to delete data from Room");
+                });
     }
-
-    @SuppressLint("MissingPermission")
-    private void setupLocationUpdates() {
-            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
-    }
-
 
     @Nullable
     @Override
